@@ -81,6 +81,34 @@ curl https://mb3admin.com/admin/service/registration/validateDevice/666
 ```
 ssh中运行命令查看是否正确返回值
 
+### docker版emby额外说明
+<br/>因升级系统升级7.0 套件停用 迁移到docker版emby应急
+```
+cp /etc/ssl/certs/ca-certificates.crt /volume1/docker/emby
+
+```
+拷贝之前的证书信息到emby文件夹
+```
+cp -r /var/packages/EmbyServer/target/var /volume1/docker/emby
+```
+拷贝之前的套件的所有资料到emby文件夹
+<br/>docker中下载emby映像后输入以下命令生成容器(装载路径需跟原来路径相同,根据自身目录调整)
+```
+docker run -d \
+--name=emby \#容器名称
+--volume /volume1/docker/emby/ssl:/ca \#ssl证书
+--volume /volume1/docker/emby/var:/config \#原套件目录数据
+--volume /volume1/docker/emby/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt \#欺骗会员的证书
+--volume /volume1/pt:/volume1/pt \#资源路径
+--volume /volume1/bt:/volume1/bt \#资源路径
+--net=host \#网络模式
+--device=/dev/dri:/dev/dri \#添加HW
+--env UID=0\#root权限
+--env GID=0 \#root权限
+--env GIDLIST=2\#root权限
+emby/embyserver:beta #下载的emby版本
+```
+<br/>然后启动后就跟原来的一模一样 不需要做其他调整
 #### 祝大家玩得开心
 
 <br/>如图,打开即可拥有会员黄标
